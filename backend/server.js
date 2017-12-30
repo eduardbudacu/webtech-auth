@@ -1,6 +1,5 @@
 const express = require("express")
 const bodyParser = require("body-parser") 
-const cors = require("cors")
 const passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy;
   
@@ -12,7 +11,14 @@ app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
-app.use(cors());
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", req.headers.origin ? req.headers.origin : "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+  next();
+});
 
 app.use(session({ secret: 'secret1321231231' }));
 app.use(passport.initialize());
@@ -24,9 +30,12 @@ const User = {
         callback(null, {
             id:1, 
             username:userDetails.username, 
-            password: 1234, 
             validPassword: function(password) {
-        return true;
+              if(password == 1234) {
+                return true;
+              } else {
+                return false;
+              }  
     }})
     }
 }
@@ -58,16 +67,31 @@ app.post('/login',
   passport.authenticate('local'),
   function(req, res) {
     // If this function gets called, authentication was successful.
-    // `req.user` contains the authenticated user.
-    res.redirect('/users/' + req.user.username);
-  });
+   res.redirect('/users/me');
+});
 
 
 app.use(express.static('../frontend/'))
 
-app.get('/users/:username',
+function isAuthenticated(req, res, next) {
+  // check the user session
+  if (req.user)
+      return next();
+  
+  //
+  res.status(401).send();
+}
+
+
+app.get('/users/me',
+  isAuthenticated,
   function(req, res) {
-    res.send('Hello, '+ req.user.username);
+    res.status(200).send({username: req.user.username, id: req.user.id});
+});
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.status(200).send('bye');
 });
 
 app.listen(8080);
