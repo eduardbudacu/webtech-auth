@@ -1,0 +1,19 @@
+{
+  "name": "webtech-auth-backend",
+  "version": "1.0.0",
+  "description": "Demonstrate auth using passport",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
+  }
+}
