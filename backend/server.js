@@ -67,7 +67,7 @@ app.post('/login',
   passport.authenticate('local'),
   function(req, res) {
     // If this function gets called, authentication was successful.
-   res.redirect('/users/me');
+   res.status(200).send({username: req.user.username, id: req.user.id});
 });
 
 
@@ -77,8 +77,6 @@ function isAuthenticated(req, res, next) {
   // check the user session
   if (req.user)
       return next();
-  
-  //
   res.status(401).send();
 }
 
